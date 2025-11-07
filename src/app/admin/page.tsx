@@ -1,51 +1,122 @@
-'use client'
-import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
+'use client';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
 
-export default function AdminPage(){
-  const [employees,setEmployees]=useState<any[]>([])
-  const [employeeId,setEmployeeId]=useState('')
-  const [delta,setDelta]=useState(3)
-  const [note,setNote]=useState('Фото работы принято')
-  const [me,setMe]=useState<any>(null)
+type Employee = { id: string; full_name: string; salon_id?: string | null };
+type PointRule = { id: string; title: string; amount: number };
+type Me = { id: string; role_id?: string | null; salon_id?: string | null };
 
-  useEffect(()=>{(async()=>{
-    const { data: { user } } = await supabase.auth.getUser()
-    if(!user){ window.location.href='/login'; return }
+export default function AdminPage() {
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [rules, setRules] = useState<PointRule[]>([]);
+  const [employeeId, setEmployeeId] = useState<string>('');
+  const [ruleId, setRuleId] = useState<string>('');
+  const [delta, setDelta] = useState<number | ''>('');
+  const [note, setNote] = useState<string>('');
+  const [me, setMe] = useState<Me | null>(null);
 
-    const { data: actor } = await supabase
-      .from('employees').select('*').eq('user_id', user.id).single()
-    setMe(actor)
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { window.location.href = '/login'; return; }
 
-    // пока без RLS — показываем всех; позже ограничим по salon_id
-    const { data } = await supabase
-      .from('employees').select('id, full_name').order('full_name')
-    setEmployees(data||[])
-  })()},[])
+      const { data: actor } = await supabase
+        .from('employees')
+        .select('id, role_id, salon_id')
+        .eq('user_id', user.id)
+        .single();
 
-  async function add(){
-    if(!employeeId) return alert('Выбери сотрудника')
-    const { error } = await supabase.from('points_ledger')
-      .insert({ employee_id: employeeId, delta, created_by: me?.id, note })
-    if(error) alert(error.message); else alert('Готово')
+      setMe(actor ?? null);
+
+      const { data: emps } = await supabase
+        .from('employees')
+        .select('id, full_name, salon_id')
+        .order('full_name');
+
+      setEmployees(emps ?? []);
+
+      const { data: prs } = await supabase
+        .from('point_rules')
+        .select('id, title, amount')
+        .eq('active', true)
+        .order('title');
+
+      setRules(prs ?? []);
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (!ruleId) { setDelta(''); setNote(''); return; }
+    const r = rules.find((x) => x.id === ruleId);
+    if (r) { setDelta(r.amount); setNote(r.title); }
+  }, [ruleId, rules]);
+
+  async function add() {
+    if (!employeeId) { alert('Выбери сотрудника'); return; }
+    const amount = typeof delta === 'number' ? delta : 0;
+
+    const { error } = await supabase.from('points_ledger').insert({
+      employee_id: employeeId,
+      rule_id: ruleId || null,
+      delta: amount,
+      created_by: me?.id ?? null,
+      note,
+    });
+    if (error) alert(error.message); else alert('Готово');
   }
 
   return (
-    <div style={{padding:20, display:'grid', gap:10, maxWidth:520}}>
+    <div style={{ padding: 20, display: 'grid', gap: 10, maxWidth: 520 }}>
       <h1>Начислить/Списать баллы</h1>
-      <select style={{border:'1px solid #ccc', padding:8, borderRadius:8}}
-              value={employeeId} onChange={e=>setEmployeeId(e.target.value)}>
+
+      <label>Сотрудник</label>
+      <select
+        style={{ border: '1px solid #ccc', padding: 8, borderRadius: 8 }}
+        value={employeeId}
+        onChange={(e) => setEmployeeId(e.target.value)}
+      >
         <option value="">Выберите сотрудника</option>
-        {employees.map(e=> <option key={e.id} value={e.id}>{e.full_name}</option>)}
+        {employees.map((e) => (
+          <option key={e.id} value={e.id}>{e.full_name}</option>
+        ))}
       </select>
-      <input style={{border:'1px solid #ccc', padding:8, borderRadius:8}}
-             type="number" value={delta} onChange={e=>setDelta(parseInt(e.target.value||'0'))} />
-      <input style={{border:'1px solid #ccc', padding:8, borderRadius:8}}
-             placeholder="Комментарий" value={note} onChange={e=>setNote(e.target.value)} />
-      <button onClick={add}
-              style={{padding:10, border:'none', borderRadius:8, background:'#111', color:'#fff'}}>
+
+      <label>Правило</label>
+      <select
+        style={{ border: '1px solid #ccc', padding: 8, borderRadius: 8 }}
+        value={ruleId}
+        onChange={(e) => setRuleId(e.target.value)}
+      >
+        <option value="">— выбрать —</option>
+        {rules.map((r) => (
+          <option key={r.id} value={r.id}>
+            {r.title} ({r.amount > 0 ? '+' : ''}{r.amount})
+          </option>
+        ))}
+      </select>
+
+      <label>Изменение (можно отредактировать)</label>
+      <input
+        style={{ border: '1px solid #ccc', padding: 8, borderRadius: 8 }}
+        type="number"
+        value={typeof delta === 'number' ? String(delta) : ''}
+        onChange={(e) => setDelta(e.target.value === '' ? '' : Number(e.target.value))}
+      />
+
+      <label>Комментарий</label>
+      <input
+        style={{ border: '1px solid #ccc', padding: 8, borderRadius: 8 }}
+        placeholder="Комментарий"
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+      />
+
+      <button
+        onClick={add}
+        style={{ padding: 10, border: 'none', borderRadius: 8, background: '#111', color: '#fff' }}
+      >
         Записать операцию
       </button>
     </div>
-  )
+  );
 }

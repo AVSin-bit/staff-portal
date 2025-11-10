@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 
@@ -15,21 +15,21 @@ export default function RatingsPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { window.location.href = '/login'; return; }
 
-      // узнаём мой салон
+      // СѓР·РЅР°С‘Рј РјРѕР№ СЃР°Р»РѕРЅ
       const { data: me } = await supabase
         .from('employees')
         .select('salon_id')
         .eq('user_id', user.id)
         .single();
 
-      // рейтинг по сети
+      // СЂРµР№С‚РёРЅРі РїРѕ СЃРµС‚Рё
       const { data: netData } = await supabase
         .from('v_rating_network')
         .select('employee_id, full_name, month_points, network_rank')
         .order('network_rank')
         .limit(100);
 
-      // рейтинг по моему салону
+      // СЂРµР№С‚РёРЅРі РїРѕ РјРѕРµРјСѓ СЃР°Р»РѕРЅСѓ
       const { data: salonData } = await supabase
         .from('v_rating_salon')
         .select('employee_id, full_name, month_points, salon_rank')
@@ -42,18 +42,18 @@ export default function RatingsPage() {
     })();
   }, []);
 
-  if (loading) return <div style={{ padding: 20 }}>Загрузка…</div>;
+  if (loading) return <div style={{ padding: 20 }}>Р—Р°РіСЂСѓР·РєР°вЂ¦</div>;
 
   return (
     <div style={{ padding: 20, display: 'grid', gap: 24 }}>
       <section>
-        <h2>Рейтинг по сети (текущий месяц)</h2>
+        <h2>Р РµР№С‚РёРЅРі РїРѕ СЃРµС‚Рё (С‚РµРєСѓС‰РёР№ РјРµСЃСЏС†)</h2>
         <table style={{ width: '100%', marginTop: 12, borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: 8 }}>№</th>
-              <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: 8 }}>Сотрудник</th>
-              <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: 8 }}>Баллы</th>
+              <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: 8 }}>в„–</th>
+              <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: 8 }}>РЎРѕС‚СЂСѓРґРЅРёРє</th>
+              <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: 8 }}>Р‘Р°Р»Р»С‹</th>
             </tr>
           </thead>
           <tbody>
@@ -69,13 +69,13 @@ export default function RatingsPage() {
       </section>
 
       <section>
-        <h2>Рейтинг по моему салону (текущий месяц)</h2>
+        <h2>Р РµР№С‚РёРЅРі РїРѕ РјРѕРµРјСѓ СЃР°Р»РѕРЅСѓ (С‚РµРєСѓС‰РёР№ РјРµСЃСЏС†)</h2>
         <table style={{ width: '100%', marginTop: 12, borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: 8 }}>№</th>
-              <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: 8 }}>Сотрудник</th>
-              <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: 8 }}>Баллы</th>
+              <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: 8 }}>в„–</th>
+              <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: 8 }}>РЎРѕС‚СЂСѓРґРЅРёРє</th>
+              <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: 8 }}>Р‘Р°Р»Р»С‹</th>
             </tr>
           </thead>
           <tbody>
@@ -92,3 +92,4 @@ export default function RatingsPage() {
     </div>
   );
 }
+

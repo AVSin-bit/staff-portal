@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 
@@ -22,17 +22,17 @@ export default function PointsPage(){
     setLoading(false)
   })()},[])
 
-  if(loading) return <div style={{padding:20}}>Загрузка…</div>
+  if(loading) return <div style={{padding:20}}>Р—Р°РіСЂСѓР·РєР°вЂ¦</div>
 
   return (
     <div style={{padding:20}}>
-      <h1>Мои операции по баллам</h1>
+      <h1>РњРѕРё РѕРїРµСЂР°С†РёРё РїРѕ Р±Р°Р»Р»Р°Рј</h1>
       <table style={{width:'100%', marginTop:12, borderCollapse:'collapse'}}>
         <thead>
           <tr>
-            <th style={{textAlign:'left', borderBottom:'1px solid #ddd', padding:8}}>Дата</th>
-            <th style={{textAlign:'left', borderBottom:'1px solid #ddd', padding:8}}>Изм.</th>
-            <th style={{textAlign:'left', borderBottom:'1px solid #ddd', padding:8}}>Комментарий</th>
+            <th style={{textAlign:'left', borderBottom:'1px solid #ddd', padding:8}}>Р”Р°С‚Р°</th>
+            <th style={{textAlign:'left', borderBottom:'1px solid #ddd', padding:8}}>РР·Рј.</th>
+            <th style={{textAlign:'left', borderBottom:'1px solid #ddd', padding:8}}>РљРѕРјРјРµРЅС‚Р°СЂРёР№</th>
           </tr>
         </thead>
         <tbody>
@@ -48,3 +48,4 @@ export default function PointsPage(){
     </div>
   )
 }
+

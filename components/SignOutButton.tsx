@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useRouter } from 'next/navigation';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 
@@ -9,5 +9,6 @@ export default function SignOutButton() {
     await supabase.auth.signOut();
     router.replace('/');
   }
-  return <button onClick={onClick}>Выйти</button>;
+  return <button onClick={onClick}>Р’С‹Р№С‚Рё</button>;
 }
+

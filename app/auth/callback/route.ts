@@ -1,18 +1,17 @@
-﻿import { NextRequest, NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/ssr";
+﻿import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
+  const redirect = url.searchParams.get("redirect") ?? "/dashboard";
+
+  const supabase = createRouteHandlerClient({ cookies });
+
   if (code) {
-    const supabase = createRouteHandlerClient({
-      cookies,
-      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    });
     await supabase.auth.exchangeCodeForSession(code);
-    return NextResponse.redirect(new URL("/dashboard", url.origin));
   }
-  return NextResponse.redirect(new URL("/", url.origin));
+
+  return NextResponse.redirect(new URL(redirect, url.origin));
 }

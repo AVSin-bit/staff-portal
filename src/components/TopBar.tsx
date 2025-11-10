@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { supabase } from '@/lib/supabase';
 
 export default function TopBar() {
@@ -18,17 +18,18 @@ export default function TopBar() {
       background: '#fff',
       zIndex: 10
     }}>
-      <a href="/" style={{ fontWeight: 700 }}>Портал сотрудников</a>
+      <a href="/" style={{ fontWeight: 700 }}>РџРѕСЂС‚Р°Р» СЃРѕС‚СЂСѓРґРЅРёРєРѕРІ</a>
       <nav style={{ display: 'flex', gap: 12 }}>
-        <a href="/dashboard">Главная</a>
-        <a href="/points">Моя лента</a>
-        <a href="/ratings">Рейтинги</a>
-        <a href="/admin">Админ</a>
+        <a href="/dashboard">Р“Р»Р°РІРЅР°СЏ</a>
+        <a href="/points">РњРѕСЏ Р»РµРЅС‚Р°</a>
+        <a href="/ratings">Р РµР№С‚РёРЅРіРё</a>
+        <a href="/admin">РђРґРјРёРЅ</a>
         <button onClick={logout}
           style={{ padding: '6px 10px', border: '1px solid #ddd', borderRadius: 8, background: '#fff' }}>
-          Выйти
+          Р’С‹Р№С‚Рё
         </button>
       </nav>
     </header>
   );
 }
+

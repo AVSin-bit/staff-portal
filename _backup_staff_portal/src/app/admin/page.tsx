@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 
@@ -52,7 +52,7 @@ export default function AdminPage() {
   }, [ruleId, rules]);
 
   async function add() {
-    if (!employeeId) { alert('Выбери сотрудника'); return; }
+    if (!employeeId) { alert('Р’С‹Р±РµСЂРё СЃРѕС‚СЂСѓРґРЅРёРєР°'); return; }
     const amount = typeof delta === 'number' ? delta : 0;
 
     const { error } = await supabase.from('points_ledger').insert({
@@ -62,32 +62,32 @@ export default function AdminPage() {
       created_by: me?.id ?? null,
       note,
     });
-    if (error) alert(error.message); else alert('Готово');
+    if (error) alert(error.message); else alert('Р“РѕС‚РѕРІРѕ');
   }
 
   return (
     <div style={{ padding: 20, display: 'grid', gap: 10, maxWidth: 520 }}>
-      <h1>Начислить/Списать баллы</h1>
+      <h1>РќР°С‡РёСЃР»РёС‚СЊ/РЎРїРёСЃР°С‚СЊ Р±Р°Р»Р»С‹</h1>
 
-      <label>Сотрудник</label>
+      <label>РЎРѕС‚СЂСѓРґРЅРёРє</label>
       <select
         style={{ border: '1px solid #ccc', padding: 8, borderRadius: 8 }}
         value={employeeId}
         onChange={(e) => setEmployeeId(e.target.value)}
       >
-        <option value="">Выберите сотрудника</option>
+        <option value="">Р’С‹Р±РµСЂРёС‚Рµ СЃРѕС‚СЂСѓРґРЅРёРєР°</option>
         {employees.map((e) => (
           <option key={e.id} value={e.id}>{e.full_name}</option>
         ))}
       </select>
 
-      <label>Правило</label>
+      <label>РџСЂР°РІРёР»Рѕ</label>
       <select
         style={{ border: '1px solid #ccc', padding: 8, borderRadius: 8 }}
         value={ruleId}
         onChange={(e) => setRuleId(e.target.value)}
       >
-        <option value="">— выбрать —</option>
+        <option value="">вЂ” РІС‹Р±СЂР°С‚СЊ вЂ”</option>
         {rules.map((r) => (
           <option key={r.id} value={r.id}>
             {r.title} ({r.amount > 0 ? '+' : ''}{r.amount})
@@ -95,7 +95,7 @@ export default function AdminPage() {
         ))}
       </select>
 
-      <label>Изменение (можно отредактировать)</label>
+      <label>РР·РјРµРЅРµРЅРёРµ (РјРѕР¶РЅРѕ РѕС‚СЂРµРґР°РєС‚РёСЂРѕРІР°С‚СЊ)</label>
       <input
         style={{ border: '1px solid #ccc', padding: 8, borderRadius: 8 }}
         type="number"
@@ -103,10 +103,10 @@ export default function AdminPage() {
         onChange={(e) => setDelta(e.target.value === '' ? '' : Number(e.target.value))}
       />
 
-      <label>Комментарий</label>
+      <label>РљРѕРјРјРµРЅС‚Р°СЂРёР№</label>
       <input
         style={{ border: '1px solid #ccc', padding: 8, borderRadius: 8 }}
-        placeholder="Комментарий"
+        placeholder="РљРѕРјРјРµРЅС‚Р°СЂРёР№"
         value={note}
         onChange={(e) => setNote(e.target.value)}
       />
@@ -115,8 +115,9 @@ export default function AdminPage() {
         onClick={add}
         style={{ padding: 10, border: 'none', borderRadius: 8, background: '#111', color: '#fff' }}
       >
-        Записать операцию
+        Р—Р°РїРёСЃР°С‚СЊ РѕРїРµСЂР°С†РёСЋ
       </button>
     </div>
   );
 }
+

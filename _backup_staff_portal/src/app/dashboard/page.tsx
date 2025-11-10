@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 
@@ -39,11 +39,11 @@ export default function Dashboard() {
     })();
   }, []);
 
-  if (loading) return <div style={{ padding: 20 }}>Загрузка…</div>;
+  if (loading) return <div style={{ padding: 20 }}>Р—Р°РіСЂСѓР·РєР°вЂ¦</div>;
   if (!profile) {
     return (
       <div style={{ padding: 20 }}>
-        Профиль сотрудника не найден. Попроси админа добавить запись в <b>employees</b>.
+        РџСЂРѕС„РёР»СЊ СЃРѕС‚СЂСѓРґРЅРёРєР° РЅРµ РЅР°Р№РґРµРЅ. РџРѕРїСЂРѕСЃРё Р°РґРјРёРЅР° РґРѕР±Р°РІРёС‚СЊ Р·Р°РїРёСЃСЊ РІ <b>employees</b>.
       </div>
     );
   }
@@ -54,27 +54,28 @@ export default function Dashboard() {
   return (
     <div style={{ padding: 20, display: 'grid', gap: 16 }}>
       <div style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16 }}>
-        <h2 style={{ margin: '0 0 8px' }}>Баланс баллов</h2>
+        <h2 style={{ margin: '0 0 8px' }}>Р‘Р°Р»Р°РЅСЃ Р±Р°Р»Р»РѕРІ</h2>
         <div style={{ fontSize: 32 }}>{balance}</div>
       </div>
 
       <div style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16 }}>
-        <h2 style={{ margin: '0 0 8px' }}>Профиль</h2>
-        <div>{profile.full_name} — {profile.position || 'Должность не указана'}</div>
-        <div style={{ opacity: .8, marginTop: 4 }}>Стаж (мес.): {months}</div>
+        <h2 style={{ margin: '0 0 8px' }}>РџСЂРѕС„РёР»СЊ</h2>
+        <div>{profile.full_name} вЂ” {profile.position || 'Р”РѕР»Р¶РЅРѕСЃС‚СЊ РЅРµ СѓРєР°Р·Р°РЅР°'}</div>
+        <div style={{ opacity: .8, marginTop: 4 }}>РЎС‚Р°Р¶ (РјРµСЃ.): {months}</div>
       </div>
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 4 }}>
         <a href="/admin" style={{ display: 'inline-block', padding: '10px 14px', borderRadius: 8, background: '#111', color: '#fff', width: 220, textAlign: 'center' }}>
-          Панель администратора
+          РџР°РЅРµР»СЊ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°
         </a>
         <a href="/points" style={{ display: 'inline-block', padding: '10px 14px', borderRadius: 8, background: '#eee', color: '#111', width: 200, textAlign: 'center' }}>
-          Моя лента
+          РњРѕСЏ Р»РµРЅС‚Р°
         </a>
         <a href="/ratings" style={{ display: 'inline-block', padding: '10px 14px', borderRadius: 8, background: '#eee', color: '#111', width: 200, textAlign: 'center' }}>
-          Рейтинги
+          Р РµР№С‚РёРЅРіРё
         </a>
       </div>
     </div>
   );
 }
+

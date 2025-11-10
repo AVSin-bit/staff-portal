@@ -1,26 +1,26 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createMiddlewareClient } from '@supabase/ssr';
+﻿import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
-  const supabase = createMiddlewareClient({
-    req,
-    res,
-    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  });
+  const supabase = createMiddlewareClient({ req, res });
+  // Обновит токены, если протухли
+  await supabase.auth.getSession();
 
-  await supabase.auth.getSession(); // рефреш сессии, если есть refresh_token
+  const isAuth = req.cookies.get("sb-access-token")?.value;
+  const isProtected =
+    req.nextUrl.pathname.startsWith("/dashboard") ||
+    req.nextUrl.pathname.startsWith("/points");
 
-  if (req.nextUrl.pathname.startsWith('/dashboard')) {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      const url = req.nextUrl.clone();
-      url.pathname = '/';
-      return NextResponse.redirect(url);
-    }
+  if (isProtected && !isAuth) {
+    const url = req.nextUrl.clone();
+    url.pathname = "/";
+    return NextResponse.redirect(url);
   }
   return res;
 }
 
-export const config = { matcher: ['/dashboard/:path*'] };
+export const config = {
+  matcher: ["/dashboard/:path*", "/points/:path*"],
+};

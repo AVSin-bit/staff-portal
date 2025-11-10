@@ -1,10 +1,10 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 import './globals.css';
 import TopBar from '@/components/TopBar';
 
 export const metadata: Metadata = {
-  title: 'Портал сотрудников',
-  description: 'Баллы, рейтинги, стаж и условия',
+  title: 'РџРѕСЂС‚Р°Р» СЃРѕС‚СЂСѓРґРЅРёРєРѕРІ',
+  description: 'Р‘Р°Р»Р»С‹, СЂРµР№С‚РёРЅРіРё, СЃС‚Р°Р¶ Рё СѓСЃР»РѕРІРёСЏ',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -19,3 +19,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+

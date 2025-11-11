@@ -1,31 +1,59 @@
-﻿import { supabaseServer } from "@/lib/supabase-server";
+﻿// app/dashboard/page.tsx
+import { cookies } from "next/headers";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 
-function humanTenure(start: string) {
-  const a = new Date(start), b = new Date();
-  let m = (b.getFullYear()-a.getFullYear())*12 + (b.getMonth()-a.getMonth());
-  if (b.getDate() < a.getDate()) m -= 1;
-  return { years: Math.floor(m/12), months: m%12 };
-}
+const ROLE_RU: Record<string, string> = {
+  director: "Директор",
+  manager: "Управляющий",
+  admin: "Администратор",
+  master: "Парикмахер",
+  cosmetologist: "Косметолог",
+  nailmaster: "Нейл-мастер",
+  massage: "Массажист",
+};
 
 export default async function DashboardPage() {
-  const supabase = supabaseServer();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return <main style={{padding:24}}>Нет сессии</main>;
+  const supabase = createServerComponentClient({ cookies });
 
-  const { data: me } = await supabase.from("v_employees")
-    .select("id, full_name, role_slug, start_date").eq("user_id", user.id).maybeSingle();
+  const {
+    data: { user },
+    error: userErr,
+  } = await supabase.auth.getUser();
 
-  if (!me) {
-    return <main style={{padding:24}}>
-      <b>Профиль сотрудника не найден.</b> Попроси админа добавить запись в <i>employees</i>.
-    </main>;
+  if (userErr || !user) {
+    return (
+      <main className="p-6">
+        <h1 className="text-3xl font-bold mb-6">Кабинет</h1>
+        <p>Нет сессии. Перейдите на главную страницу и войдите.</p>
+      </main>
+    );
   }
 
-  const { years, months } = humanTenure(me.start_date);
-  return <main style={{padding:24, fontFamily:"system-ui"}}>
-    <h1>Кабинет</h1>
-    <div>Сотрудник: {me.full_name}</div>
-    <div>Роль: {me.role_slug}</div>
-    <div>Стаж: {years} лет {months} мес.</div>
-  </main>;
+  const { data: emp, error: empError } = await supabase
+    .from("v_employees")
+    .select("full_name, role_name, role_slug, years, months")
+    .eq("user_id", user.id)
+    .single();
+
+  if (empError || !emp) {
+    return (
+      <main className="p-6">
+        <h1 className="text-3xl font-bold mb-6">Кабинет</h1>
+        <p>
+          <b>Профиль сотрудника не найден.</b> Попросите управляющую добавить Вас в портал.
+        </p>
+      </main>
+    );
+  }
+
+  const roleRu = emp.role_name || ROLE_RU[emp.role_slug] || emp.role_slug;
+
+  return (
+    <main className="p-6">
+      <h1 className="text-3xl font-bold mb-6">Кабинет</h1>
+      <p>Сотрудник: {emp.full_name}</p>
+      <p>Роль: {roleRu}</p>
+      <p>Стаж: {emp.years} лет {emp.months} мес.</p>
+    </main>
+  );
 }

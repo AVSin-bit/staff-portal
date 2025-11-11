@@ -1,6 +1,10 @@
 "use client";
-
 import { supabaseBrowser } from "./supabase-browser";
+
+function siteUrl() {
+  // всегда явный, чтобы Supabase не пытался угадать домен
+  return process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+}
 
 /** Вход по e-mail через magic-link */
 export async function signInWithEmail(email: string) {
@@ -12,7 +16,7 @@ export async function signInWithEmail(email: string) {
   const { error } = await supabase.auth.signInWithOtp({
     email: clean,
     options: {
-      emailRedirectTo: `${window.location.origin}/auth/callback`,
+      emailRedirectTo: `${siteUrl()}/auth/callback`,
     },
   });
 

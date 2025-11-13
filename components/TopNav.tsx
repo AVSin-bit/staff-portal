@@ -1,4 +1,4 @@
-п»ї'use client';
+РїВ»С—'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -50,10 +50,10 @@ export default function TopNav() {
   );
 
   return (
-    <nav style={barStyle} aria-label="Р вЂњР В»Р В°Р Р†Р Р…Р В°РЎРЏ Р Р…Р В°Р Р†Р С‘Р С–Р В°РЎвЂ Р С‘РЎРЏ">
-      <Item href="/dashboard">Р С™Р В°Р В±Р С‘Р Р…Р ВµРЎвЂљ</Item>
-      <Item href="/rating">Р В Р ВµР в„–РЎвЂљР С‘Р Р…Р С–</Item>
-      <Item href="/motivation">Р СљР С•РЎвЂљР С‘Р Р†Р В°РЎвЂ Р С‘РЎРЏ</Item>
+    <nav style={barStyle} aria-label="Р В РІР‚СљР В Р’В»Р В Р’В°Р В Р вЂ Р В Р вЂ¦Р В Р’В°Р РЋР РЏ Р В Р вЂ¦Р В Р’В°Р В Р вЂ Р В РЎвЂР В РЎвЂ“Р В Р’В°Р РЋРІР‚В Р В РЎвЂР РЋР РЏ">
+      <Item href="/dashboard">Р В РЎв„ўР В Р’В°Р В Р’В±Р В РЎвЂР В Р вЂ¦Р В Р’ВµР РЋРІР‚С™</Item>
+      <Item href="/rating">Р В Р’В Р В Р’ВµР В РІвЂћвЂ“Р РЋРІР‚С™Р В РЎвЂР В Р вЂ¦Р В РЎвЂ“</Item>
+      <Item href="/motivation">Р В РЎС™Р В РЎвЂўР РЋРІР‚С™Р В РЎвЂР В Р вЂ Р В Р’В°Р РЋРІР‚В Р В РЎвЂР РЋР РЏ</Item>
     </nav>
   );
 }

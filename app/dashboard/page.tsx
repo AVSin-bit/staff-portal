@@ -1,59 +1,70 @@
-﻿// app/dashboard/page.tsx
-import { cookies } from "next/headers";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+﻿import Link from 'next/link';
+import TopNav from '../../components/TopNav';
 
-const ROLE_RU: Record<string, string> = {
-  director: "Директор",
-  manager: "Управляющий",
-  admin: "Администратор",
-  master: "Парикмахер",
-  cosmetologist: "Косметолог",
-  nailmaster: "Нейл-мастер",
-  massage: "Массажист",
+const pageStyle: React.CSSProperties = { padding: '16px 20px' };
+const h1: React.CSSProperties = { fontSize: 32, fontWeight: 700, marginBottom: 16 };
+const p: React.CSSProperties = { margin: '6px 0', fontSize: 16 };
+const row: React.CSSProperties = { display: 'flex', gap: 12, marginTop: 16, flexWrap: 'wrap' };
+const btn: React.CSSProperties = {
+  display: 'inline-block',
+  padding: '10px 14px',
+  borderRadius: 10,
+  border: '1px solid #111827',
+  background: '#111827',
+  color: '#fff',
+  textDecoration: 'none',
+  fontWeight: 600
+};
+const card: React.CSSProperties = {
+  marginTop: 20,
+  padding: 16,
+  border: '1px solid #e5e7eb',
+  borderRadius: 12,
+  background: '#fafafa'
 };
 
 export default async function DashboardPage() {
-  const supabase = createServerComponentClient({ cookies });
-
-  const {
-    data: { user },
-    error: userErr,
-  } = await supabase.auth.getUser();
-
-  if (userErr || !user) {
-    return (
-      <main className="p-6">
-        <h1 className="text-3xl font-bold mb-6">Кабинет</h1>
-        <p>Нет сессии. Перейдите на главную страницу и войдите.</p>
-      </main>
-    );
-  }
-
-  const { data: emp, error: empError } = await supabase
-    .from("v_employees")
-    .select("full_name, role_name, role_slug, years, months")
-    .eq("user_id", user.id)
-    .single();
-
-  if (empError || !emp) {
-    return (
-      <main className="p-6">
-        <h1 className="text-3xl font-bold mb-6">Кабинет</h1>
-        <p>
-          <b>Профиль сотрудника не найден.</b> Попросите управляющую добавить Вас в портал.
-        </p>
-      </main>
-    );
-  }
-
-  const roleRu = emp.role_name || ROLE_RU[emp.role_slug] || emp.role_slug;
+  // Здесь оставляй существующую логику получения сотрудника/роли/стажа.
+  // Разметку ниже можно безопасно врезать поверх текущего простого HTML.
 
   return (
-    <main className="p-6">
-      <h1 className="text-3xl font-bold mb-6">Кабинет</h1>
-      <p>Сотрудник: {emp.full_name}</p>
-      <p>Роль: {roleRu}</p>
-      <p>Стаж: {emp.years} лет {emp.months} мес.</p>
-    </main>
+    <>
+      <TopNav />
+      <main style={pageStyle}>
+        <h1 style={h1}>Кабинет</h1>
+
+        {/* Твой текущий блок данных о сотруднике */}
+        <p style={p}><strong>Сотрудник:</strong> Синицина Анна Владимировна</p>
+        <p style={p}><strong>Роль:</strong> Директор</p>
+        <p style={p}><strong>Стаж:</strong> 9 лет 4 мес.</p>
+
+        {/* Действия */}
+        <div style={row}>
+          <Link href="/rating" style={btn} aria-label="Перейти в рейтинг">
+            Перейти в рейтинг
+          </Link>
+          <Link href="/motivation" style={{ ...btn, background: '#ffffff', color: '#111827' }}>
+            Правила мотивации
+          </Link>
+        </div>
+
+        {/* Краткая подсказка по мотивации */}
+        <section style={card} aria-labelledby="motivation-brief">
+          <h2 id="motivation-brief" style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>
+            Мотивация сети — кратко
+          </h2>
+          <ul style={{ marginTop: 8, paddingLeft: 18, lineHeight: '22px' }}>
+            <li>Все начисления идут по «правилам мотивации» (код правила → сумма баллов).</li>
+            <li>Подробная таблица и статусы активных правил — на странице «Мотивация».</li>
+            <li>Историю собственных начислений смотри на странице «Рейтинг».</li>
+          </ul>
+          <p style={{ marginTop: 8 }}>
+            Нужна корректировка правил? Пиши администратору салона или директору филиала.
+          </p>
+        </section>
+      </main>
+    </>
   );
 }
+
+

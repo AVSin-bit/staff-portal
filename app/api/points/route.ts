@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 
@@ -12,10 +12,10 @@ export async function POST(req: Request) {
   const reason: string | null = body.reason ?? null;
 
   if (!employee_id || !Number.isFinite(delta)) {
-    return NextResponse.json({ error: "employee_id и delta обязательны" }, { status: 400 });
+    return NextResponse.json({ error: "employee_id Рё delta РѕР±СЏР·Р°С‚РµР»СЊРЅС‹" }, { status: 400 });
   }
 
-  // Вставляем; created_by проставится default'ом
+  // Р’СЃС‚Р°РІР»СЏРµРј; created_by РїСЂРѕСЃС‚Р°РІРёС‚СЃСЏ default'РѕРј
   const { error } = await supabase.from("points").insert({
     employee_id,
     delta,
@@ -28,3 +28,5 @@ export async function POST(req: Request) {
   }
   return NextResponse.json({ ok: true });
 }
+
+

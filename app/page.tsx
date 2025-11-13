@@ -8,3 +8,5 @@ export default async function Page() {
   if (user) redirect("/dashboard");
   return <LoginForm />;
 }
+
+

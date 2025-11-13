@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { signInWithEmail } from "@/lib/auth-actions";
@@ -13,24 +13,26 @@ export default function LoginForm() {
     setLoading(true);
     setMsg(null);
     const { error } = await signInWithEmail(email);
-    setMsg(error ? `Ошибка: ${error}` : "Письмо с ссылкой отправлено. Проверьте почту.");
+    setMsg(error ? `РћС€РёР±РєР°: ${error}` : "РџРёСЃСЊРјРѕ СЃ СЃСЃС‹Р»РєРѕР№ РѕС‚РїСЂР°РІР»РµРЅРѕ. РџСЂРѕРІРµСЂСЊС‚Рµ РїРѕС‡С‚Сѓ.");
     setLoading(false);
   }
 
   return (
     <main style={{ maxWidth: 520, margin: "80px auto", fontFamily: "system-ui" }}>
-      <h1 style={{ fontSize: 36, fontWeight: 800, marginBottom: 16 }}>Портал мастеров</h1>
-      <p style={{ marginBottom: 20 }}>Вход по e-mail (magic-link)</p>
+      <h1 style={{ fontSize: 36, fontWeight: 800, marginBottom: 16 }}>РџРѕСЂС‚Р°Р» РјР°СЃС‚РµСЂРѕРІ</h1>
+      <p style={{ marginBottom: 20 }}>Р’С…РѕРґ РїРѕ e-mail (magic-link)</p>
       <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
         <input type="email" required placeholder="you@example.com"
                value={email} onChange={(e) => setEmail(e.target.value)}
                style={{ padding: 12, border: "1px solid #ccc", borderRadius: 10 }}/>
         <button disabled={loading}
                 style={{ padding: "12px 16px", borderRadius: 10, border: "none", background: "#111", color: "#fff" }}>
-          {loading ? "Отправляю..." : "Войти"}
+          {loading ? "РћС‚РїСЂР°РІР»СЏСЋ..." : "Р’РѕР№С‚Рё"}
         </button>
       </form>
-      {msg && <div style={{ marginTop: 12, color: msg.startsWith("Ошибка") ? "#b00020" : "green" }}>{msg}</div>}
+      {msg && <div style={{ marginTop: 12, color: msg.startsWith("РћС€РёР±РєР°") ? "#b00020" : "green" }}>{msg}</div>}
     </main>
   );
 }
+
+

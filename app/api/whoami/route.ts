@@ -7,3 +7,5 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser();
   return NextResponse.json({ user });
 }
+
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 
@@ -40,8 +40,8 @@ export default function PointsPage() {
 
   async function submit() {
     setMsg(null);
-    if (!employeeId) { setMsg("Выберите сотрудника"); return; }
-    if (delta === "" || !Number.isFinite(Number(delta))) { setMsg("Укажите изменение баллов"); return; }
+    if (!employeeId) { setMsg("Р’С‹Р±РµСЂРёС‚Рµ СЃРѕС‚СЂСѓРґРЅРёРєР°"); return; }
+    if (delta === "" || !Number.isFinite(Number(delta))) { setMsg("РЈРєР°Р¶РёС‚Рµ РёР·РјРµРЅРµРЅРёРµ Р±Р°Р»Р»РѕРІ"); return; }
 
     const res = await fetch("/api/points", {
       method: "POST",
@@ -55,66 +55,66 @@ export default function PointsPage() {
     });
 
     const data = await res.json();
-    if (!res.ok) { setMsg(`Ошибка: ${data.error}`); return; }
+    if (!res.ok) { setMsg(`РћС€РёР±РєР°: ${data.error}`); return; }
 
-    setMsg("Сохранено");
+    setMsg("РЎРѕС…СЂР°РЅРµРЅРѕ");
     setReason("");
     setRuleCode("");
     setDelta("");
     await loadAll();
   }
 
-  if (loading) return <main style={{ padding: 24 }}>Загрузка…</main>;
+  if (loading) return <main style={{ padding: 24 }}>Р—Р°РіСЂСѓР·РєР°вЂ¦</main>;
 
   return (
     <main style={{ maxWidth: 820, margin: "32px auto", fontFamily: "system-ui" }}>
-      <h1 style={{ fontSize: 24, marginBottom: 16 }}>Начислить/Списать баллы</h1>
+      <h1 style={{ fontSize: 24, marginBottom: 16 }}>РќР°С‡РёСЃР»РёС‚СЊ/РЎРїРёСЃР°С‚СЊ Р±Р°Р»Р»С‹</h1>
 
       <div style={{ display: "grid", gap: 12, marginBottom: 20 }}>
         <select value={employeeId} onChange={(e) => setEmployeeId(e.target.value)}
                 style={{ padding: 10, borderRadius: 8, border: "1px solid #ccc" }}>
-          <option value="">Выберите сотрудника</option>
+          <option value="">Р’С‹Р±РµСЂРёС‚Рµ СЃРѕС‚СЂСѓРґРЅРёРєР°</option>
           {emps.map(e => <option key={e.id} value={e.id}>{e.full_name}</option>)}
         </select>
 
         <select value={ruleCode} onChange={(e) => setRuleCode(e.target.value)}
                 style={{ padding: 10, borderRadius: 8, border: "1px solid #ccc" }}>
-          <option value="">— выбрать правило —</option>
+          <option value="">вЂ” РІС‹Р±СЂР°С‚СЊ РїСЂР°РІРёР»Рѕ вЂ”</option>
           {rules.map(r => <option key={r.code} value={r.code}>{r.title} ({r.delta > 0 ? "+" : ""}{r.delta})</option>)}
         </select>
 
-        <input type="number" placeholder="Изменение (можно отредактировать)"
+        <input type="number" placeholder="РР·РјРµРЅРµРЅРёРµ (РјРѕР¶РЅРѕ РѕС‚СЂРµРґР°РєС‚РёСЂРѕРІР°С‚СЊ)"
                value={delta === "" ? "" : String(delta)}
                onChange={(e) => setDelta(e.target.value === "" ? "" : Number(e.target.value))}
                style={{ padding: 10, borderRadius: 8, border: "1px solid #ccc" }} />
 
-        <input type="text" placeholder="Комментарий"
+        <input type="text" placeholder="РљРѕРјРјРµРЅС‚Р°СЂРёР№"
                value={reason} onChange={(e) => setReason(e.target.value)}
                style={{ padding: 10, borderRadius: 8, border: "1px solid #ccc" }} />
 
         <button onClick={submit}
                 style={{ padding: "10px 14px", borderRadius: 8, border: "none", background: "#111", color: "#fff", cursor: "pointer" }}>
-          Записать операцию
+          Р—Р°РїРёСЃР°С‚СЊ РѕРїРµСЂР°С†РёСЋ
         </button>
 
-        {msg && <div style={{ color: msg.startsWith("Ошибка") ? "#b00020" : "green" }}>{msg}</div>}
+        {msg && <div style={{ color: msg.startsWith("РћС€РёР±РєР°") ? "#b00020" : "green" }}>{msg}</div>}
       </div>
 
-      <h2 style={{ fontSize: 20, margin: "24px 0 8px" }}>Лента операций</h2>
+      <h2 style={{ fontSize: 20, margin: "24px 0 8px" }}>Р›РµРЅС‚Р° РѕРїРµСЂР°С†РёР№</h2>
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr>
-            <th style={{ textAlign: "left", borderBottom: "1px solid #eee", padding: 8 }}>Дата</th>
-            <th style={{ textAlign: "left", borderBottom: "1px solid #eee", padding: 8 }}>Правило</th>
-            <th style={{ textAlign: "right", borderBottom: "1px solid #eee", padding: 8 }}>Баллы</th>
-            <th style={{ textAlign: "left", borderBottom: "1px solid #eee", padding: 8 }}>Комментарий</th>
+            <th style={{ textAlign: "left", borderBottom: "1px solid #eee", padding: 8 }}>Р”Р°С‚Р°</th>
+            <th style={{ textAlign: "left", borderBottom: "1px solid #eee", padding: 8 }}>РџСЂР°РІРёР»Рѕ</th>
+            <th style={{ textAlign: "right", borderBottom: "1px solid #eee", padding: 8 }}>Р‘Р°Р»Р»С‹</th>
+            <th style={{ textAlign: "left", borderBottom: "1px solid #eee", padding: 8 }}>РљРѕРјРјРµРЅС‚Р°СЂРёР№</th>
           </tr>
         </thead>
         <tbody>
           {history.map((r, i) => (
             <tr key={i}>
               <td style={{ borderBottom: "1px solid #f3f3f3", padding: 8 }}>{new Date(r.created_at).toLocaleString()}</td>
-              <td style={{ borderBottom: "1px solid #f3f3f3", padding: 8 }}>{r.rule_code ?? "—"}</td>
+              <td style={{ borderBottom: "1px solid #f3f3f3", padding: 8 }}>{r.rule_code ?? "вЂ”"}</td>
               <td style={{ borderBottom: "1px solid #f3f3f3", padding: 8, textAlign: "right" }}>
                 {r.delta > 0 ? `+${r.delta}` : r.delta}
               </td>
@@ -122,10 +122,12 @@ export default function PointsPage() {
             </tr>
           ))}
           {history.length === 0 && (
-            <tr><td colSpan={4} style={{ padding: 12, color: "#666" }}>Пока нет операций</td></tr>
+            <tr><td colSpan={4} style={{ padding: 12, color: "#666" }}>РџРѕРєР° РЅРµС‚ РѕРїРµСЂР°С†РёР№</td></tr>
           )}
         </tbody>
       </table>
     </main>
   );
 }
+
+

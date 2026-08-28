@@ -1,0 +1,4 @@
+{
+  "extends": "next/core-web-vitals",
+  "ignorePatterns": ["_backup_staff_portal/**", ".next/**", "node_modules/**"]
+}

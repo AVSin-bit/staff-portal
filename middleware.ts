@@ -1,32 +1,47 @@
-﻿import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
+import { NextResponse, type NextRequest } from 'next/server';
+import { updateSession } from './lib/supabase/middleware';
 
-export async function middleware(req: NextRequest) {
-  // ВАЖНО: передаём res в клиент, чтобы Supabase мог обновить куки
-  const res = NextResponse.next();
-  const supabase = createMiddlewareClient({ req, res });
+/**
+ * Закрывает ВСЕ приватные разделы портала и заодно продлевает сессию.
+ * Раньше здесь были только /dashboard и /points, поэтому /admin, /manager
+ * и /director открывались вообще без входа.
+ */
+const PROTECTED = ['/dashboard', '/motivation', '/admin', '/manager', '/director'];
 
-  // Единственный источник истины — getSession()
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+export async function middleware(request: NextRequest) {
+  const { response, user } = await updateSession(request);
+  const path = request.nextUrl.pathname;
 
-  const path = req.nextUrl.pathname;
-  const isProtected =
-    path.startsWith("/dashboard") || path.startsWith("/points");
+  const isProtected = PROTECTED.some(
+    (prefix) => path === prefix || path.startsWith(prefix + '/')
+  );
 
-  if (isProtected && !session) {
-    const url = req.nextUrl.clone();
-    url.pathname = "/";
-    url.searchParams.set("from", path);
+  if (isProtected && !user) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/';
+    url.search = '';
+    url.searchParams.set('next', path);
     return NextResponse.redirect(url);
   }
 
-  return res; // возвращаем res, где уже могут быть обновлённые куки
+  // Уже вошедшего сотрудника не держим на форме входа.
+  if (path === '/' && user) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/dashboard';
+    url.search = '';
+    return NextResponse.redirect(url);
+  }
+
+  return response;
 }
 
-// Матчим ТОЛЬКО защищённые страницы
 export const config = {
-  matcher: ["/dashboard/:path*", "/points/:path*"],
+  matcher: [
+    '/',
+    '/dashboard/:path*',
+    '/motivation/:path*',
+    '/admin/:path*',
+    '/manager/:path*',
+    '/director/:path*',
+  ],
 };

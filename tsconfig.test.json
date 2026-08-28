@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "ES2022",
+    "noEmit": false,
+    "outDir": ".test-build",
+    "jsx": "react-jsx",
+    "incremental": false,
+    "types": ["node"]
+  },
+  "include": ["tests/**/*.ts", "lib/roles.ts", "lib/format.ts", "lib/stats.ts", "lib/period.ts", "lib/types/db.ts"],
+  "exclude": ["node_modules", "_backup_staff_portal", ".next", ".test-build"]
+}

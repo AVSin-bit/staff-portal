@@ -6,25 +6,30 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "tsc -p tsconfig.test.json && node --test \".test-build/tests/*.test.js\"",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.10.0",
-    "@supabase/ssr": "0.5.0",
+    "@supabase/ssr": "^0.5.0",
     "@supabase/supabase-js": "^2.81.1",
+    "@swc/helpers": "0.5.5",
     "next": "14.2.5",
     "pg": "^8.16.3",
     "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react-dom": "18.3.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/node": "20.12.12",
     "@types/react": "18.2.79",
     "@types/react-dom": "18.2.25",
-    "autoprefixer": "10.4.19",
+    "autoprefixer": "^10.4.22",
     "eslint": "8.57.0",
     "eslint-config-next": "14.2.5",
-    "postcss": "8.4.38",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.18",
     "typescript": "5.4.5"
   }
 }

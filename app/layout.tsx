@@ -1,19 +1,23 @@
-﻿// app/layout.tsx
-import type { Metadata } from "next";
+import './globals.css';
+import type { ReactNode } from 'react';
+import type { Metadata, Viewport } from 'next';
 
 export const metadata: Metadata = {
-  title: "Портал сотрудников",
-  description: "Цирюльникъ — внутренний портал",
+  title: 'Портал сотрудников',
+  description: 'Личный кабинет, показатели и мотивация сети салонов красоты',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+};
+
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ru">
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </head>
-      <body className="min-h-screen bg-white text-black">{children}</body>
+      <body className="min-h-screen bg-slate-50 text-slate-900 antialiased">
+        {children}
+      </body>
     </html>
   );
 }

@@ -1,36 +1,163 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# staff_portal — портал сотрудников сети салонов красоты
 
-## Getting Started
+Внутренний портал: сотрудник входит по рабочему e-mail и видит свои показатели
+из 1С, место в рейтинге и условия мотивации. Администратор и управляющий видят
+свой салон, директор — всю сеть.
 
-First, run the development server:
+Стек: Next.js 14 (App Router), TypeScript, Supabase (Auth + Postgres), Vercel.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## Поток данных
+
+```
+1С  ->  chasy_*.xls / valy_*.xls / vitrina_*.xls  ->  D:\reports
+     ->  C:\1c_robot\robot_upload_reports.py (service_role)
+     ->  Supabase: employee_monthly_stats
+     ->  Next.js (server components + API)
+     ->  портал
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Портал ничего не считает сам и не хранит собственных показателей.
+Источник истины — 1С. Робот перед вставкой удаляет все строки за месяц,
+поэтому свежий отчёт полностью заменяет предыдущий.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Структура
 
-## Learn More
+```
+app/
+  page.tsx                форма входа (magic-link)
+  auth/callback/          приём ссылки из письма: PKCE, OTP и implicit-флоу
+  dashboard/              личный кабинет
+  motivation/             система мотивации и справочник
+  admin/                  экран администратора: свой салон
+  manager/                экран управляющего: свой салон + итоги
+  director/               экран директора: вся сеть
+  api/                    те же данные в JSON (whoami, my-stats, admin, manager, director)
+components/               общий интерфейс: шапка, карточки, таблицы рейтинга
+lib/
+  supabase/               ЕДИНСТВЕННЫЕ клиенты Supabase (browser, server, middleware)
+  auth/                   определение текущего сотрудника и проверка доступа
+  data/portal.ts          все запросы к базе за показателями
+  stats.ts                склейка сотрудников с показателями, рейтинги, места
+  roles.ts                роль из должности, уровни доступа, состав навигации
+  format.ts               рубли, часы, периоды, стаж, русские склонения
+supabase/migrations/      схема, RLS и справочные данные
+middleware.ts             защита приватных разделов и продление сессии
+```
 
-To learn more about Next.js, take a look at the following resources:
+Импорты только относительные — алиас `@/` из проекта убран.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Роли
 
-## Deploy on Vercel
+Права считаются из текстовой должности `employees.position`, а не из
+`employees.role_id` (там UUID, показывать его пользователю бессмысленно).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Должность содержит | Роль      | Доступ                                  |
+|--------------------|-----------|-----------------------------------------|
+| «директор»         | director  | вся сеть                                |
+| «управляющ»        | manager   | свой салон, включая администраторов     |
+| «администратор»    | admin     | свой салон                              |
+| всё остальное      | master    | только свои данные                      |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Правило продублировано в SQL — функция `public.role_from_position()`,
+чтобы RLS и приложение считали роль одинаково.
+
+Доступ проверяется в трёх местах: middleware (есть ли сессия),
+серверная страница или API (`guardPage` / `guard`), и RLS в базе.
+
+---
+
+## Локальный запуск
+
+```bash
+npm install
+cp .env.example .env.local   # подставьте свои значения
+npm run dev
+```
+
+Портал поднимется на http://localhost:3000
+
+Проверки:
+
+```bash
+npm run build   # сборка с включёнными проверками типов и линта
+npm run lint
+```
+
+---
+
+## Настройка проекта Supabase с нуля
+
+Нужна, если проект удалён или создаётся новый.
+
+1. Создайте проект на https://supabase.com и скопируйте из
+   Project Settings -> Data API -> Project URL и API Keys -> anon.
+2. Пропишите их в `.env.local` и в переменные окружения проекта на Vercel.
+3. Выполните миграции из `supabase/migrations/` по порядку —
+   через SQL Editor в Supabase Studio или `supabase db push`:
+   - `20260828120000_staff_portal_schema.sql` — таблицы, индексы, триггеры;
+   - `20260828120100_staff_portal_rls.sql` — функции и политики доступа;
+   - `20260828120200_staff_portal_seed.sql` — салоны и блоки мотивации.
+4. Authentication -> URL Configuration:
+   - Site URL — боевой домен портала;
+   - Redirect URLs — добавьте `https://ВАШ_ДОМЕН/auth/callback`
+     и `http://localhost:3000/auth/callback`.
+5. Заведите сотрудников в таблице `employees`: `full_name`, `email`,
+   `position`, `salon_id`, `start_date`, `is_active`.
+   Поле `full_name` должно совпадать с ФИО в отчётах 1С — по нему робот
+   сопоставляет строки отчёта с сотрудниками.
+6. Свяжите сотрудников с учётными записями. После первого входа сотрудника
+   его строка появится в `auth.users`, и связь проставляется так:
+
+```sql
+update public.employees e
+set user_id = u.id
+from auth.users u
+where lower(u.email) = lower(e.email)
+  and e.user_id is null;
+```
+
+Пока `user_id` не проставлен, сотрудник входит, но видит сообщение
+о том, что аккаунт не привязан к карточке.
+
+---
+
+## 1С-робот
+
+Живёт отдельно от портала: `C:\1c_robot\robot_upload_reports.py`.
+Настройки подключения — `C:\1c_robot\config_supabase.py` (URL и service_role-ключ).
+
+Читает самые свежие файлы из `D:\reports`:
+
+| Файл            | Колонка значения | Что попадает в базу      |
+|-----------------|------------------|--------------------------|
+| `valy_*.xls`    | «Оплачено»       | `val` — вал по услугам   |
+| `vitrina_*.xls` | «Сумма»          | `retail_sales` — витрина |
+| `chasy_*.xls`   | «Время работы»   | `hours` — часы           |
+
+Период берётся из имени файла (`valy_2025-11-17.xls` -> ноябрь 2025,
+`report_date` = 17.11.2025).
+
+Запуск:
+
+```bash
+python C:\1c_robot\robot_upload_reports.py
+```
+
+Робот пишет service_role-ключом, RLS на него не распространяется.
+Сотрудники, которых нет в `employees`, попадают в лог как предупреждение
+и в базу не записываются.
+
+---
+
+## Что показывает портал, если данных нет
+
+Никаких выдуманных цифр и нулей вместо данных. Если за текущий месяц
+по сотруднику нет строки в `employee_monthly_stats`, портал пишет
+«Нет данных за выбранный месяц». В рейтинге такие сотрудники не участвуют,
+их количество указано под таблицей.
